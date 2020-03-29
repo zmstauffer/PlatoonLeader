@@ -28,63 +28,15 @@ public class MouseManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        //left mouse button
-        handleLeftMouse();
-
-        //move units
-        if (Input.GetMouseButtonDown(right))            
-        {
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            float entry;
-
-            if (plane.Raycast(ray, out entry))
-            {
-                dragStartPosition = ray.GetPoint(entry);
-            }
-        }
-        if (Input.GetMouseButton(right))                //is user dragging mouse w/ right button selected? if so this will align the unit if selected
-        {
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            float entry;
-
-            if (plane.Raycast(ray, out entry))
-            {
-                dragCurrentPosition = ray.GetPoint(entry);
-                desiredDirection = dragCurrentPosition - dragStartPosition;
-            }
-        }
-
-        if (Input.GetMouseButtonUp(right))          //right mouse button up
-        {
-            if(selectedCollider != null)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit rayHit;
-                if (Physics.Raycast(ray, out rayHit))
-                {
-                    if (desiredDirection.magnitude >= minDirectionMagnitude)
-                    {
-                        Move(selectedCollider, desiredDirection, dragStartPosition);
-                    }
-                    else
-                    {
-                        Move(selectedCollider, Vector3.zero, dragStartPosition);
-                    }
-                }
-            }
-        }
+        handleLeftMouse();                                                  //left mouse button
+        handleRightMouse();                                                 //right mouse button
+        camRig.GetComponent<CameraController>().handleMiddleMouse();        //currently middle mouse is handled by CameraController.cs
     }
 
     public event Action<Collider> OnMouseSelect;
@@ -105,7 +57,6 @@ public class MouseManager : MonoBehaviour
             OnMouseDeselect(collider);
         }
     }
-
     void Move(Collider collider, Vector3 direction, Vector3 destination)
     {
         if (OnMove != null)
@@ -175,6 +126,58 @@ public class MouseManager : MonoBehaviour
                     //we are assuming we are trying to deselect unit
                     MouseDeselect(selectedCollider);
                     selectedCollider = null;
+                }
+            }
+        }
+    }
+
+    void handleRightMouse()
+    {
+        //move units
+        if (Input.GetMouseButtonDown(right))
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            float entry;
+
+            if (plane.Raycast(ray, out entry))
+            {
+                dragStartPosition = ray.GetPoint(entry);
+            }
+        }
+        if (Input.GetMouseButton(right))                //is user dragging mouse w/ right button selected? if so this will align the unit if selected
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            float entry;
+
+            if (plane.Raycast(ray, out entry))
+            {
+                dragCurrentPosition = ray.GetPoint(entry);
+                desiredDirection = dragCurrentPosition - dragStartPosition;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(right))          //right mouse button up
+        {
+            if (selectedCollider != null)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit rayHit;
+                if (Physics.Raycast(ray, out rayHit))
+                {
+                    if (desiredDirection.magnitude >= minDirectionMagnitude)
+                    {
+                        Move(selectedCollider, desiredDirection, dragStartPosition);
+                    }
+                    else
+                    {
+                        Move(selectedCollider, Vector3.zero, dragStartPosition);
+                    }
                 }
             }
         }

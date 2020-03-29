@@ -41,7 +41,6 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //handleMouseInput();
         handleMovementInput();
     }
 
@@ -83,41 +82,12 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void handleMouseInput()
+    public void handleMiddleMouse()
     {
         //zoom using mousewheel
         if(Input.mouseScrollDelta.y != 0)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmount;
-        }
-
-        ////scroll using left mouse
-        //if (Input.GetMouseButtonDown(left))
-        //{
-        //    Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //    float entry;
-
-        //    if (plane.Raycast(ray, out entry))
-        //    {
-        //        dragStartPosition = ray.GetPoint(entry);
-        //    }
-        //}
-        if (Input.GetMouseButton(left))
-        {
-            Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            float entry;
-
-            if (plane.Raycast(ray, out entry))
-            {
-                dragCurrentPosition = ray.GetPoint(entry);
-                newPosition = transform.position + dragStartPosition - dragCurrentPosition;
-            }
         }
 
         //rotate using middle mouse
@@ -132,7 +102,6 @@ public class CameraController : MonoBehaviour
             rotateStartPosition = rotateCurrentPosition;
             newRotation *= Quaternion.Euler(Vector3.up * -(difference.x / 5f));
         }
-
 
     }
 
