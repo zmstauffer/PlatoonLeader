@@ -9,18 +9,21 @@ public class MouseManager : MonoBehaviour
     public Collider selectedCollider = null;
 
     public Vector3 desiredDirection;
-    public const int minDirectionMagnitude = 3;         //min specified direction for mouse when setting facing. Prevents "ghost clicks". Anything less than this will get thrown out.
 
     public Vector3 dragStartPosition;
     public Vector3 dragCurrentPosition;
     public bool isDragging = false;
 
-    public GameObject cam;
+    public GameObject camRig;
 
     //mouse button stand-ins
     int left = 0;
     int right = 1;
     int middle = 2;
+
+    //some constants, should probably be somewhere else
+    public const int minDirectionMagnitude = 3;         //min specified direction for mouse when setting facing. Prevents "ghost clicks". Anything less than this will get thrown out.
+    public float minDragDistance = 1;                   //min for how much we have to drag before we are turning off unit selection
 
     // Start is called before the first frame update
     void Start()
@@ -31,31 +34,8 @@ public class MouseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //mouse buttons
-        if (Input.GetMouseButtonUp(left) && isDragging == false)        //we only want to select a unit if we haven't been dragging the camera around
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit rayHit;
-            if (Physics.Raycast(ray, out rayHit))
-            {
-                //unselect objects if necessary
-                if (selectedCollider != null && selectedCollider != rayHit.collider)
-                {
-                    MouseDeselect(selectedCollider);
-                }
-
-                //select new object
-                Collider hitCollider = rayHit.collider;
-                selectedCollider = hitCollider;
-                MouseSelect(hitCollider);
-            }
-            else
-            {
-                //we are assuming we are trying to deselect unit
-                MouseDeselect(selectedCollider);
-                selectedCollider = null;
-            }
-        }
+        //left mouse button
+        handleLeftMouse();
 
         //move units
         if (Input.GetMouseButtonDown(right))            
@@ -131,6 +111,72 @@ public class MouseManager : MonoBehaviour
         if (OnMove != null)
         {
             OnMove(collider, direction, destination);
+        }
+    }
+
+    void handleLeftMouse()
+    {
+        //handle initial left mouse click
+        if (Input.GetMouseButtonDown(left))
+        {
+            bool overUI = false;        //TODO: actually see if we are over a UI. Unity might handle this for us?
+
+            if (overUI)
+            {
+                //TODO: handle UI stuff
+            }
+            else
+            {
+                //begin map drag
+                camRig.GetComponent<CameraController>().handleLeftMouseDown();
+            }
+        }
+
+        //handle if left mouse button is being held down
+        if (Input.GetMouseButton(left))
+        {
+            //drag camera
+            camRig.GetComponent<CameraController>().handleLeftMouse();
+            if (camRig.GetComponent<CameraController>().dragDistance >= minDragDistance)
+            {
+                isDragging = true;
+            }
+        }
+
+        //handle when left mouse button is released
+        if (Input.GetMouseButtonUp(left))        //we only want to select a unit if we haven't been dragging the camera around
+        {
+            if (isDragging)
+            {
+                //stop dragging, don't select anything
+                isDragging = false;
+            }
+            else
+            {
+                //see if we are hovering over squad to select
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit rayHit;
+
+                if (Physics.Raycast(ray, out rayHit))
+                {
+                    //unselect objects if necessary
+                    if (selectedCollider != null && selectedCollider != rayHit.collider)
+                    {
+                        MouseDeselect(selectedCollider);
+                    }
+
+                    //select new object
+                    Collider hitCollider = rayHit.collider;
+                    selectedCollider = hitCollider;
+                    MouseSelect(hitCollider);
+                }
+                else
+                {
+                    //we are assuming we are trying to deselect unit
+                    MouseDeselect(selectedCollider);
+                    selectedCollider = null;
+                }
+            }
         }
     }
 }

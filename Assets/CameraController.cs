@@ -20,6 +20,7 @@ public class CameraController : MonoBehaviour
 
     public Vector3 dragStartPosition;
     public Vector3 dragCurrentPosition;
+    public float dragDistance;
 
     public Vector3 rotateStartPosition;
     public Vector3 rotateCurrentPosition;
@@ -40,19 +41,13 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        handleMouseInput();
+        //handleMouseInput();
         handleMovementInput();
     }
 
-    void handleMouseInput()
+    public void handleLeftMouseDown()
     {
-        //zoom using mousewheel
-        if(Input.mouseScrollDelta.y != 0)
-        {
-            newZoom += Input.mouseScrollDelta.y * zoomAmount;
-        }
-
-        //scroll using left mouse
+        //start map drag
         if (Input.GetMouseButtonDown(left))
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
@@ -66,6 +61,50 @@ public class CameraController : MonoBehaviour
                 dragStartPosition = ray.GetPoint(entry);
             }
         }
+    }
+
+    public void handleLeftMouse()
+    {
+        //continue dragging map
+        if (Input.GetMouseButton(left))
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            float entry;
+
+            if (plane.Raycast(ray, out entry))
+            {
+                dragCurrentPosition = ray.GetPoint(entry);
+                newPosition = transform.position + dragStartPosition - dragCurrentPosition;
+                dragDistance = Mathf.Abs((dragStartPosition - dragCurrentPosition).magnitude);
+            }
+        }
+    }
+
+    void handleMouseInput()
+    {
+        //zoom using mousewheel
+        if(Input.mouseScrollDelta.y != 0)
+        {
+            newZoom += Input.mouseScrollDelta.y * zoomAmount;
+        }
+
+        ////scroll using left mouse
+        //if (Input.GetMouseButtonDown(left))
+        //{
+        //    Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //    float entry;
+
+        //    if (plane.Raycast(ray, out entry))
+        //    {
+        //        dragStartPosition = ray.GetPoint(entry);
+        //    }
+        //}
         if (Input.GetMouseButton(left))
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);

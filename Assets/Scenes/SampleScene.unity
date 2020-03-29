@@ -1306,7 +1306,7 @@ MonoBehaviour:
   dragStartPosition: {x: 0, y: 0, z: 0}
   dragCurrentPosition: {x: 0, y: 0, z: 0}
   isDragging: 0
-  camera: {fileID: 963194225}
+  camRig: {fileID: 43147783}
 --- !u!4 &1937854778
 Transform:
   m_ObjectHideFlags: 0
