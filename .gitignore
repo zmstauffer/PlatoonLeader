@@ -349,3 +349,7 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /Temp
+/Library/PackageCache/com.unity.render-pipelines.core@7.1.8/Editor/LookDev
+/Library/PackageCache
+/Library/UIElements/EditorWindows
+/Library/

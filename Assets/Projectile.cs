@@ -16,11 +16,14 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        //Object.Destroy(this.gameObject);
+        if (other.tag == "Human")
+        {
+            Object.Destroy(this.gameObject);
+        }
     }
 }

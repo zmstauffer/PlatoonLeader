@@ -37,6 +37,7 @@ public class MouseManager : MonoBehaviour
         handleLeftMouse();                                                  //left mouse button
         handleRightMouse();                                                 //right mouse button
         camRig.GetComponent<CameraController>().handleMiddleMouse();        //currently middle mouse is handled by CameraController.cs
+        handleKeyboard();
     }
 
     public event Action<Collider> OnMouseSelect;
@@ -181,5 +182,26 @@ public class MouseManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    void handleKeyboard()
+    {
+        if (Input.GetKey(KeyCode.G))
+        {
+            throwGrenade();
+        }
+    }
+
+    void throwGrenade()
+    {
+        Plane plane = new Plane(Vector3.up, Vector3.zero);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        float entry;
+
+        plane.Raycast(ray, out entry);
+
+        GameObject grenade = Instantiate(Resources.Load("Grenade"), ray.GetPoint(entry) + Vector3.up, transform.rotation) as GameObject;
+
     }
 }
