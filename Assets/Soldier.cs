@@ -14,9 +14,17 @@ public class Soldier : MonoBehaviour
     public SquadManager squad;
     public const bool isFriendly = true;
 
+    //let's do some properties for our soldiers
+    public string name { get; set; }
+    public string rank { get; set; }
+
+    public float reactionTime { get; set; }
+    public float fireRate { get; set; }
+    public float perception { get; set; }
+
     private const int bulletVelocity = 2000;            //this doesn't belong here!
+    private const int bulletDamage = 5;
     private bool allowFire = true;
-    private const float secondsBetweenShots = .5f;
     private float timeToNextFire;
     private const float maxRange = 25;
 
@@ -64,10 +72,10 @@ public class Soldier : MonoBehaviour
             {
                 if (allowFire)
                 {
-                    Vector3 fireDirection = currentTarget.transform.position + (currentTarget.GetComponent<Rigidbody>().velocity)/2 - transform.position;       //this needs to be redone (the rigidbody.velocity/2 is just a hack to get them to lead the target a bit)
+                    Vector3 fireDirection = currentTarget.transform.position +  - transform.position;       //currentTarget.GetComponent<Rigidbody>().velocity)/2 this needs to be redone (the rigidbody.velocity/2 is just a hack to get them to lead the target a bit)
                     fire(fireDirection);
                     allowFire = false;
-                    timeToNextFire = Time.time + secondsBetweenShots;
+                    timeToNextFire = Time.time + fireRate;
                 }
                 else
                 {
@@ -91,7 +99,10 @@ public class Soldier : MonoBehaviour
 
         //give bullet a force
         newBullet.GetComponent<Rigidbody>().AddForce(newBullet.transform.forward * bulletVelocity);
-        newBullet.GetComponent<Projectile>().damage = 1;
+        newBullet.GetComponent<Projectile>().damage = bulletDamage;
+
+        //play a sound
+        FindObjectOfType<AudioManager>().Play("shot");
 
         //bullet will self destruct after 3 secs
         Object.Destroy(newBullet, 3.0f);

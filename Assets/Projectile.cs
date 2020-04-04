@@ -21,7 +21,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Human")
+        if (other.tag == "Human" || other.tag == "Enemy")
         {
             Object.Destroy(this.gameObject);
         }

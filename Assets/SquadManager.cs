@@ -45,6 +45,13 @@ public class SquadManager : MonoBehaviour
         {
             targets.Add(other.gameObject);
         }
+
+        Debug.Log(other.tag);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        targets.Add(collision.gameObject);
     }
 
     //When the Primitive exits the collision, it will change Color
@@ -99,21 +106,24 @@ public class SquadManager : MonoBehaviour
     #region Squad Load
     private void loadSquad()
     {
-        //create 1 soldier for now
+        //create 1 soldier for now. eventually will have read/write and load for this
         for (int i = 0; i < 5; i++)
         {
+            GameObject newSoldier;
             if (soldiers.Count <= 0)
             {
-                GameObject newSoldier = Instantiate(Resources.Load("Soldier"), transform.position, transform.rotation) as GameObject;
-                newSoldier.GetComponent<Soldier>().squad = this;
-                soldiers.Add(newSoldier);
+                newSoldier = Instantiate(Resources.Load("Soldier"), transform.position, transform.rotation) as GameObject;
             }
             else
             {
-                GameObject newSoldier = Instantiate(Resources.Load("Soldier"), soldiers[i - 1].transform.TransformPoint(Vector3.right * 2), transform.rotation) as GameObject;
-                newSoldier.GetComponent<Soldier>().squad = this;
-                soldiers.Add(newSoldier);
+                newSoldier = Instantiate(Resources.Load("Soldier"), soldiers[i - 1].transform.TransformPoint(Vector3.right * 2), transform.rotation) as GameObject;
             }
+
+            //set soldier properties
+            Soldier soldierScript = newSoldier.GetComponent<Soldier>();
+            soldierScript.squad = this;
+            soldierScript.fireRate = UnityEngine.Random.Range(1.4f, 1.7f);
+            soldiers.Add(newSoldier);
         }
     }
 
