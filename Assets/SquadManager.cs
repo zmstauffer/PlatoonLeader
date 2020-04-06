@@ -43,6 +43,8 @@ public class SquadManager : MonoBehaviour
                 targets.RemoveAt(i);
             }
         }
+
+        //test comment
     }
 
     #region Collider Handling
