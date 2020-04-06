@@ -44,7 +44,7 @@ public class SquadManager : MonoBehaviour
             }
         }
 
-        //test comment
+        //test comment #2
     }
 
     #region Collider Handling
