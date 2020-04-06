@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,7 +9,7 @@ public class SquadManager : MonoBehaviour
 {
     public List<GameObject> soldiers = new List<GameObject>();         //the soldiers that make up this squad
 
-    public const int soldierOffset = 2;         //how far apart the soldiers stand from each other
+    public const int soldierOffset = 4;         //how far apart the soldiers stand from each other
 
     public List<GameObject> targets = new List<GameObject>();          //list of targets
 
@@ -25,7 +26,13 @@ public class SquadManager : MonoBehaviour
     void Update()
     {
         //want to keep transform equal w/ soldier that represents squad leader
-        transform.position = soldiers[0].transform.position;
+        Vector3 newPosition = Vector3.zero;
+
+        newPosition.x = soldiers.Average(c => c.transform.position.x);
+        newPosition.y = soldiers.Average(c => c.transform.position.y);
+        newPosition.z = soldiers.Average(c => c.transform.position.z);
+
+        transform.position = newPosition;
         transform.rotation = soldiers[0].transform.rotation;
 
         //update target list
@@ -123,6 +130,8 @@ public class SquadManager : MonoBehaviour
             Soldier soldierScript = newSoldier.GetComponent<Soldier>();
             soldierScript.squad = this;
             soldierScript.fireRate = UnityEngine.Random.Range(1.4f, 1.7f);
+            soldierScript.reactionTime = UnityEngine.Random.Range(.2f, .6f);
+            soldierScript.maxFireRange = UnityEngine.Random.Range(24f, 27f);
             soldiers.Add(newSoldier);
         }
     }

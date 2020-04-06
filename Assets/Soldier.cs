@@ -21,12 +21,16 @@ public class Soldier : MonoBehaviour
     public float reactionTime { get; set; }
     public float fireRate { get; set; }
     public float perception { get; set; }
+    public float maxFireRange { get; set; }
 
     private const int bulletVelocity = 2000;            //this doesn't belong here!
     private const int bulletDamage = 5;
-    private bool allowFire = true;
+    private bool allowFire = false;
     private float timeToNextFire;
     private const float maxRange = 25;
+
+    //private GameObject currentTarget = null;
+    private GameObject lastTarget = null;               //who were we firing at before?
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +38,7 @@ public class Soldier : MonoBehaviour
         FindObjectOfType<MouseManager>().OnMouseSelect += OnMouseSelect;
         FindObjectOfType<MouseManager>().OnMouseDeselect += OnMouseDeselect;
         FindObjectOfType<MouseManager>().OnMove += OnMove;
-        timeToNextFire = Time.time;
+        timeToNextFire = Time.time + reactionTime;
     }
 
     // Update is called once per frame
@@ -45,29 +49,7 @@ public class Soldier : MonoBehaviour
         //check for targets
         if (squad.targets.Count > 0)
         {
-            GameObject currentTarget = squad.targets[0];
-            foreach (GameObject potentialTarget in squad.targets)
-            {
-                if (potentialTarget != null)
-                {
-                    float potentialRange = Vector3.Distance(potentialTarget.transform.position, transform.position);
-                    float currentRange = 9999.0f;
-                    if (currentTarget != null)
-                    {
-                        currentRange = Vector3.Distance(currentTarget.transform.position, transform.position);
-                    }
-
-                    if (potentialRange < currentRange)
-                    {
-                        currentTarget = potentialTarget; 
-                    }
-                }
-                else
-                {
-                    currentTarget = potentialTarget;
-                }
-            }
-
+            GameObject currentTarget = getClosestTarget();
             if (currentTarget != null)
             {
                 if (allowFire)
@@ -79,13 +61,45 @@ public class Soldier : MonoBehaviour
                 }
                 else
                 {
-                    if (Time.time >= timeToNextFire)
+                    if (lastTarget == currentTarget)
                     {
-                        allowFire = true;
+                        if (Time.time >= timeToNextFire)
+                        {
+                            allowFire = true;
+                        }
+                    }
+                    else 
+                    {
+                        timeToNextFire = Time.time + reactionTime;
+                        lastTarget = currentTarget;
                     }
                 }
             }
         }
+    }
+
+    //gets closest target to fire at. This should be smartened up!
+    public GameObject getClosestTarget()
+    {
+        GameObject currentTarget = null;
+        foreach (GameObject potentialTarget in squad.targets)
+        {
+            if (potentialTarget != null)
+            {
+                float potentialRange = Vector3.Distance(potentialTarget.transform.position, transform.position);
+                float currentRange = 9999.0f;
+                if (currentTarget != null)
+                {
+                    currentRange = Vector3.Distance(currentTarget.transform.position, transform.position);
+                }
+
+                if (potentialRange < currentRange && potentialRange <= maxFireRange)
+                {
+                    currentTarget = potentialTarget;
+                }
+            }
+        }
+        return currentTarget;
     }
 
     public void fire(Vector3 direction)
