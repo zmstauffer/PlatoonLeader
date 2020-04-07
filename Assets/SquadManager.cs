@@ -9,7 +9,7 @@ public class SquadManager : MonoBehaviour
 {
     public List<GameObject> soldiers = new List<GameObject>();         //the soldiers that make up this squad
 
-    public const int soldierOffset = 4;         //how far apart the soldiers stand from each other
+    public const int soldierOffset = 2;         //how far apart the soldiers stand from each other
 
     public List<GameObject> targets = new List<GameObject>();          //list of targets
 
@@ -43,8 +43,6 @@ public class SquadManager : MonoBehaviour
                 targets.RemoveAt(i);
             }
         }
-
-        //test comment #2
     }
 
     #region Collider Handling
@@ -89,6 +87,7 @@ public class SquadManager : MonoBehaviour
     public void OnMove(Vector3 finalFacing, Vector3 destination)
     {
         Vector3 right;
+        Vector3 back;
 
         //finalFacing will be zero if the user just right clicked on the terrain instead of drawing an arrow to set unit facing.
         if (finalFacing == Vector3.zero)
@@ -101,13 +100,14 @@ public class SquadManager : MonoBehaviour
             right = Quaternion.Euler(0, 90f, 0) * finalFacing;                                      //squad will line up in desired facing
         }
 
-        //calculate new positions for squad and tell them to move
-        for (int i = 0; i < soldiers.Count; i++)
-        {
-            Vector3 stepOver = right.normalized * soldierOffset * i;
-            soldiers[i].GetComponent<Soldier>().OnMove(destination + stepOver);
-        }
+        back = Quaternion.Euler(0, 90f, 0) * right;
 
+        //calculate new positions for squad and tell them to move. going for a 'V' formation w/ squad leader in center.
+        soldiers[0].GetComponent<Soldier>().OnMove(destination);         //squad leader in front. Not accurate but good enough for now
+        soldiers[1].GetComponent<Soldier>().OnMove(destination + (right.normalized + back.normalized) * soldierOffset);
+        soldiers[2].GetComponent<Soldier>().OnMove(destination + (right.normalized + back.normalized) * soldierOffset * 2);
+        soldiers[3].GetComponent<Soldier>().OnMove(destination + (-right.normalized + back.normalized) * soldierOffset);
+        soldiers[4].GetComponent<Soldier>().OnMove(destination + (-right.normalized + back.normalized) * soldierOffset * 2);
     }
 
     #endregion
