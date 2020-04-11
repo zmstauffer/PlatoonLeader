@@ -22,8 +22,9 @@ public class Soldier : MonoBehaviour
     public float fireRate { get; set; }
     public float perception { get; set; }
     public float maxFireRange { get; set; }
+    public float accuracy { get; set; }
 
-    private const int bulletVelocity = 2000;            //this doesn't belong here!
+    private const int bulletVelocity = 2500;            //this doesn't belong here!
     private const int bulletDamage = 5;
     private bool allowFire = false;
     private float timeToNextFire;
@@ -39,6 +40,7 @@ public class Soldier : MonoBehaviour
         FindObjectOfType<MouseManager>().OnMouseDeselect += OnMouseDeselect;
         FindObjectOfType<MouseManager>().OnMove += OnMove;
         timeToNextFire = Time.time + reactionTime;
+        accuracy = UnityEngine.Random.Range(.7f, .95f);
     }
 
     // Update is called once per frame
@@ -104,6 +106,10 @@ public class Soldier : MonoBehaviour
 
     public void fire(Vector3 direction)
     {
+        //modify firing direction based on soldier's accuracy
+        direction.x += calcAccuracyForShot()*10;
+        direction.z += calcAccuracyForShot()*10;
+
         //rotate soldier towards target
         Quaternion newRotation = Quaternion.LookRotation(direction, Vector3.up);
         transform.rotation = newRotation;
@@ -111,7 +117,7 @@ public class Soldier : MonoBehaviour
         //instantiate bullet prefab slightly in front of soldier
         GameObject newBullet = Instantiate(Resources.Load("Bullet"), transform.position + direction.normalized, newRotation) as GameObject;
 
-        //give bullet a force
+        //give bullet a force, adjust w/ accuracy
         newBullet.GetComponent<Rigidbody>().AddForce(newBullet.transform.forward * bulletVelocity);
         newBullet.GetComponent<Projectile>().damage = bulletDamage;
 
@@ -121,6 +127,15 @@ public class Soldier : MonoBehaviour
         //bullet will self destruct after 3 secs
         Object.Destroy(newBullet, 3.0f);
     }
+
+    private float calcAccuracyForShot()
+    {
+        int sign = utility.chooseRandomSign();
+        float acc = Random.Range(accuracy, 1);
+
+        return (1 - acc) * sign;
+    }
+
     public void OnMouseSelect(Collider collider)
     {
         if (GetComponent<Collider>() == collider)
