@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\AudioManager.cs" />
     <Compile Include="Assets\CameraController.cs" />
+    <Compile Include="Assets\DestroyMe.cs" />
     <Compile Include="Assets\Enemy.cs" />
     <Compile Include="Assets\EnemyMasterController.cs" />
     <Compile Include="Assets\Grenade.cs" />

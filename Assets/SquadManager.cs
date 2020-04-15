@@ -131,9 +131,6 @@ public class SquadManager : MonoBehaviour
             //set soldier properties
             Soldier soldierScript = newSoldier.GetComponent<Soldier>();
             soldierScript.squad = this;
-            soldierScript.fireRate = UnityEngine.Random.Range(1.4f, 1.7f);
-            soldierScript.reactionTime = UnityEngine.Random.Range(.2f, .6f);
-            soldierScript.maxFireRange = UnityEngine.Random.Range(24f, 27f);
             soldiers.Add(newSoldier);
         }
     }

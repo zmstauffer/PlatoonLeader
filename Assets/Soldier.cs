@@ -40,7 +40,10 @@ public class Soldier : MonoBehaviour
         FindObjectOfType<MouseManager>().OnMouseDeselect += OnMouseDeselect;
         FindObjectOfType<MouseManager>().OnMove += OnMove;
         timeToNextFire = Time.time + reactionTime;
-        accuracy = UnityEngine.Random.Range(.7f, .95f);
+        accuracy = Random.Range(.7f, .95f);
+        fireRate = Random.Range(1.4f, 1.7f);
+        reactionTime = Random.Range(.2f, .6f);
+        maxFireRange = Random.Range(24f, 27f);
     }
 
     // Update is called once per frame
